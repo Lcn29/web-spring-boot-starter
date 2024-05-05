@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration>
+
+    <Properties>
+        <Property name="LOG_DIRECTORY">logs</Property>
+        <Property name="LOG_MAX_SIZE" value="1 GB"/>
+        <Property name="LOG_STORE_DAYS" value="30"/>
+        <Property name="LOG_PATTERN">
+            [%d{yyyy-MM-dd HH:mm:ss.SSS}][%style{%t}{magenta}][%highlight{%5level}][%style{%40.40logger{39}}{cyan}][%style{%X{traceId}}{BLUE}] %m%n
+        </Property>
+    </Properties>
+
+
+    <Appenders>
+
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+
+        <RollingRandomAccessFile name="allFile"
+                                 immediateFlush="false"
+                                 fileName="${LOG_DIRECTORY}/all.log"
+                                 filePattern="${logDirectory}/all-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <DefaultRolloverStrategy max="${LOG_STORE_DAYS}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="${LOG_MAX_SIZE}"/>
+            </Policies>
+        </RollingRandomAccessFile>
+
+        <RollingFile name="warnFile" fileName="${LOG_DIRECTORY}/warn.log"
+                     filePattern="${logDirectory}/warn-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <DefaultRolloverStrategy max="${LOG_STORE_DAYS}"/>
+            <Filters>
+                <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="${LOG_MAX_SIZE}"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+
+        <Root level="info">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="allFile"/>
+            <AppenderRef ref="warnFile"/>
+        </Root>
+    </Loggers>
+
+</Configuration>
