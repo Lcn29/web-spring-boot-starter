@@ -43,7 +43,6 @@
                 <artifactId>disruptor</artifactId>
                 <version>${disruptor.vesion}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 

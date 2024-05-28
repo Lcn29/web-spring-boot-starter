@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.github.lcn29.web.starter.constant.StringConstants;
 import io.github.lcn29.web.starter.json.exception.JsonParseException;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -29,7 +30,7 @@ public class JsonUtils {
         // 忽略对象的 null 值字段
         OBJECT_MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         // 设置 Date 类型的序列化及反序列化格式
-        OBJECT_MAPPER.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+        OBJECT_MAPPER.setDateFormat(new SimpleDateFormat(StringConstants.DATE_TIME_FORMAT));
 
         // 忽略空 Bean 转 json 的错误
         OBJECT_MAPPER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);

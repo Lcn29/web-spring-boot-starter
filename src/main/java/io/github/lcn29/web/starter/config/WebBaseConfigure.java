@@ -1,4 +1,4 @@
-package io.github.lcn29.web.starter;
+package io.github.lcn29.web.starter.config;
 
 import io.github.lcn29.web.starter.exception.GlobalExceptionHandler;
 import io.github.lcn29.web.starter.interceptor.TraceIdInterceptor;
