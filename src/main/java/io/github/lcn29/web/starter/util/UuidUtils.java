@@ -12,7 +12,6 @@ import java.util.UUID;
  */
 public class UuidUtils {
 
-    private static final String CROSS_BAR = "-";
 
     /**
      * 获取 UUID
@@ -20,6 +19,6 @@ public class UuidUtils {
      * @return UUID
      */
     public static String getUuid() {
-        return UUID.randomUUID().toString().replace(CROSS_BAR, StringConstants.EMPTY_STR);
+        return UUID.randomUUID().toString().replace(StringConstants.CROSS_BAR, StringConstants.EMPTY_STR);
     }
 }

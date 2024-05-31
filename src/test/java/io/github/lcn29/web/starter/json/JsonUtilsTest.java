@@ -1,5 +1,6 @@
 package io.github.lcn29.web.starter.json;
 
+
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -45,13 +46,15 @@ public class JsonUtilsTest {
 
         String json = "{\"name\":\"lcn29\",\"age\":18,\"innerJsonData\":{\"innerString\":\"innerString\"}}";
         JsonData jsonData = JsonUtils.toObj(json, JsonData.class);
-        System.out.println(jsonData.toString());
+        assert jsonData != null;
+        System.out.println(jsonData);
     }
 
     @Test
     public void testToObjList() {
         String json = "[{\"name\":\"lcn29\",\"age\":18,\"innerJsonData\":{\"innerString\":\"innerString\"}}]";
         List<JsonData> list = JsonUtils.toObjList(json, JsonData.class);
+        assert list != null;
         list.forEach(System.out::println);
     }
 

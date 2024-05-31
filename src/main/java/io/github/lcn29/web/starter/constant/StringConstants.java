@@ -8,6 +8,10 @@ package io.github.lcn29.web.starter.constant;
  */
 public class StringConstants {
 
+    /**
+     * 横线
+     */
+    public static final String CROSS_BAR = "-";
 
     /**
      * 空字符串
@@ -18,6 +22,11 @@ public class StringConstants {
      * 空格
      */
     public final static String BLANK_SPACE = " ";
+
+    /**
+     * 分号
+     */
+    public final static String SEMICOLON = ";";
 
     /**
      * 年月日时间格式

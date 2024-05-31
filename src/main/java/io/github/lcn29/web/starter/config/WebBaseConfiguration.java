@@ -9,6 +9,7 @@ import io.github.lcn29.web.starter.response.ResponseResultHandler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -23,7 +24,8 @@ import java.util.List;
  * @author lcn29
  * @date 2024-05-05 17:40:40
  */
-public class WebBaseConfigure implements WebMvcConfigurer {
+@Configuration
+public class WebBaseConfiguration implements WebMvcConfigurer {
 
     @Bean
     public GlobalExceptionHandler globalExceptionHandler() {
@@ -35,6 +37,15 @@ public class WebBaseConfigure implements WebMvcConfigurer {
     public ResponseResultHandler responseResultHandler() {
         // 响应结果转 Response 处理器
         return new ResponseResultHandler();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(Jackson2ObjectMapperBuilderCustomizer.class)
+    public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
+        // 添加请求参数和响应体的数据类型序列化和反序列化器
+        // 内部默认添加了 LocalDateTime/LocalDate 的序列化和反序列化 Long/BigInt 的序列化
+        // 默认的序列化方式可以被 @JsonDeserialize 和 @JsonSerialize 注解覆盖
+        return new JacksonObjectMapperBuilderCustomizer().generateJackson2ObjectMapperBuilderCustomizer();
     }
 
     @Override
@@ -54,18 +65,9 @@ public class WebBaseConfigure implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
+        // 转换器
         registry.addConverter(new String2LocalDateTimeConverter());
         registry.addConverter(new String2LocalDateConverter());
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(Jackson2ObjectMapperBuilderCustomizer.class)
-    public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
-
-        // 添加请求参数和响应体的数据类型序列化和反序列化器
-        // 内部默认添加了 LocalDateTime/LocalDate 的序列化和反序列化 Long/BigInt 的序列化
-        // 默认的序列化方式可以被 @JsonDeserialize 和 @JsonSerialize 注解覆盖
-        return new JacksonObjectMapperBuilderCustomizer().generateJackson2ObjectMapperBuilderCustomizer();
     }
 
 }

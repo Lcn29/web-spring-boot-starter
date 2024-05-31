@@ -4,6 +4,7 @@ import io.github.lcn29.web.starter.code.WebBaseErrorStatusCode;
 import io.github.lcn29.web.starter.constant.StringConstants;
 import io.github.lcn29.web.starter.response.Response;
 import io.github.lcn29.web.starter.response.ResponseBuilder;
+import jakarta.servlet.ServletException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -32,35 +33,18 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    private static final  String BLANK_SPACE = " ";
-    private static final  String SEMICOLON = ";";
-
     /**
-     * 业务 info 异常
-     *
-     * @param exception 异常信息
-     * @return 响应结果
-     */
-    @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
-    @ExceptionHandler(InfoException.class)
-    public Response<Void> infoException(InfoException exception) {
-        logger.info("Business's InfoException:{}", exception.getMessage());
-        return ResponseBuilder.fail(exception.getCode(), exception.getMessage(), null);
-    }
-
-    /**
-     * http 请求方式错误
+     * http 请求方式错误/请求参数缺失
      *
      * @param exception 异常信息
      * @return 响应结果
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public Response<Void> httpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
+    @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class, MissingServletRequestParameterException.class})
+    public Response<Void> missingServletRequestParameterException(ServletException exception) {
 
-        logger.info("Http Request Method Exception:{}", exception.getMethod());
-        return ResponseBuilder.fail(WebBaseErrorStatusCode.HTTP_REQUEST_METHOD_ERROR.getCode(),
-            WebBaseErrorStatusCode.HTTP_REQUEST_METHOD_ERROR.getMessage());
+        logger.info("Http Request Method Exception:{}", exception.getMessage());
+        return ResponseBuilder.fail(WebBaseErrorStatusCode.PARAM_ERROR.getCode(), WebBaseErrorStatusCode.PARAM_ERROR.getMessage());
     }
 
     /**
@@ -74,52 +58,35 @@ public class GlobalExceptionHandler {
     public Response<Void> conversionFailedException(MethodArgumentTypeMismatchException exception) {
 
         logger.info("Http Request Param Convert Exception:{}", exception.getMessage());
-
-
         return ResponseBuilder.fail(WebBaseErrorStatusCode.PARAM_ERROR.getCode(),
             StringUtils.hasLength(exception.getMessage()) ? exception.getMessage() : WebBaseErrorStatusCode.PARAM_ERROR.getMessage());
     }
 
     /**
-     * 请求参数缺失
-     *
-     * @param exception 异常信息
-     * @return 响应结果
-     */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public Response<Void> missingServletRequestParameterException(MissingServletRequestParameterException exception) {
-
-        logger.info("Http Request Method Exception:{}", exception.getMessage());
-        return ResponseBuilder.fail(WebBaseErrorStatusCode.PARAM_ERROR.getCode(), WebBaseErrorStatusCode.PARAM_ERROR.getMessage());
-    }
-
-    /**
      * validation 参数校验异常
      *
      * @param exception 异常信息
      * @return 响应结果
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
-    public Response<Void> methodArgumentNotValidException(MethodArgumentNotValidException exception) {
-
-        logger.info("Http Request Param Valid Exception:{}", exception.getMessage());
-        return ResponseBuilder.fail(WebBaseErrorStatusCode.PARAM_ERROR.getCode(), buildMessages(exception.getBindingResult()));
-    }
-
-    /**
-     * validation 参数校验异常
-     *
-     * @param exception 异常信息
-     * @return 响应结果
-     */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = {BindException.class})
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class, BindException.class})
     public Response<Void> bindException(BindException exception) {
 
         logger.info("Http Request Param Valid Exception:{}", exception.getMessage());
         return ResponseBuilder.fail(WebBaseErrorStatusCode.PARAM_ERROR.getCode(), buildMessages(exception.getBindingResult()));
+    }
+
+    /**
+     * 业务 info 异常
+     *
+     * @param exception 异常信息
+     * @return 响应结果
+     */
+    @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
+    @ExceptionHandler(InfoException.class)
+    public Response<Void> infoException(InfoException exception) {
+        logger.info("Business's InfoException:{}", exception.getMessage());
+        return ResponseBuilder.fail(exception.getCode(), exception.getMessage(), null);
     }
 
     /**
@@ -167,10 +134,10 @@ public class GlobalExceptionHandler {
         // 拼接字符串
         for (ObjectError allError : result.getAllErrors()) {
             if (allError instanceof FieldError fieldError) {
-                resultBuilder.append(fieldError.getField()).append(BLANK_SPACE)
+                resultBuilder.append(fieldError.getField()).append(StringConstants.BLANK_SPACE)
                     .append(fieldError.getDefaultMessage())
-                    .append(SEMICOLON)
-                    .append(BLANK_SPACE);
+                    .append(StringConstants.SEMICOLON)
+                    .append(StringConstants.BLANK_SPACE);
             }
         }
         return resultBuilder.toString();
