@@ -7,8 +7,8 @@
     <artifactId>spring-boot-web-starter</artifactId>
     <version>${revision}</version>
 
-    <name>spring-boot-web-starter</name>
-    <description>spring-boot-web-starter</description>
+    <name>web-spring-boot-starter</name>
+    <description>web-spring-boot-starter</description>
 
     <properties>
         <!-- project setting -->

@@ -7,7 +7,6 @@ import io.github.lcn29.web.starter.response.ResponseBuilder;
 import jakarta.servlet.ServletException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
@@ -18,9 +17,9 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * 全局异常捕获
@@ -39,7 +38,6 @@ public class GlobalExceptionHandler {
      * @param exception 异常信息
      * @return 响应结果
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class, MissingServletRequestParameterException.class})
     public Response<Void> missingServletRequestParameterException(ServletException exception) {
 
@@ -53,7 +51,6 @@ public class GlobalExceptionHandler {
      * @param exception 异常信息
      * @return 响应结果
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public Response<Void> conversionFailedException(MethodArgumentTypeMismatchException exception) {
 
@@ -68,7 +65,6 @@ public class GlobalExceptionHandler {
      * @param exception 异常信息
      * @return 响应结果
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {MethodArgumentNotValidException.class, BindException.class})
     public Response<Void> bindException(BindException exception) {
 
@@ -77,12 +73,23 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * http 请求资源未找到
+     *
+     * @param exception 异常信息
+     * @return 响应结果
+     */
+    @ExceptionHandler(value = {NoResourceFoundException.class})
+    public Response<Void> noResourceFoundException(NoResourceFoundException exception) {
+        logger.info("Http Request Resource Not Found Exception:{}", exception.getMessage());
+        return ResponseBuilder.fail(WebBaseErrorStatusCode.HTTP_REQUEST_PATH_NOT_FOUND.getCode(), exception.getMessage());
+    }
+
+    /**
      * 业务 info 异常
      *
      * @param exception 异常信息
      * @return 响应结果
      */
-    @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
     @ExceptionHandler(InfoException.class)
     public Response<Void> infoException(InfoException exception) {
         logger.info("Business's InfoException:{}", exception.getMessage());
@@ -96,8 +103,7 @@ public class GlobalExceptionHandler {
      * @return 响应结果
      */
     @ExceptionHandler(WarnException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    Response<Void> warnException(WarnException exception) {
+    public Response<Void> warnException(WarnException exception) {
 
         logger.warn("Business's WarnException:{}", exception.getMessage(), exception);
         return ResponseBuilder.fail(exception.getCode(), exception.getMessage());
@@ -109,9 +115,8 @@ public class GlobalExceptionHandler {
      * @param exception 异常信息
      * @return 响应结果
      */
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = Exception.class)
-    Response<Void> defaultException(Exception exception) {
+    public Response<Void> defaultException(Exception exception) {
 
         logger.warn("System's Exception:{}", exception.getMessage(), exception);
         return ResponseBuilder.fail(WebBaseErrorStatusCode.INTERNAL_SERVER_ERROR.getCode(),
